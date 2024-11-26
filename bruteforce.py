@@ -33,7 +33,7 @@ def process_shef_with_delay(ports, delay_after, delay_seconds):
 
         # Run the 'shef' command and save the output
         output_file = os.path.join(port_dir, f"{port}_401.txt")
-        shef_command = f"shef -q \"country:ru '401' port:{port}\" > {output_file}"
+        shef_command = f"shef -q \"country:test '401' port:{port}\" > {output_file}"
         print(f"Running shef for port {port}: {shef_command}")
         try:
             subprocess.run(shef_command, shell=True, check=True)
