@@ -7,7 +7,7 @@ It does multiple tasks at once using threads and adds delays for 5 seconds after
 1. Install Shef (https://github.com/1hehaq/shef)
 2. Use `filter.py` to filter the ports if needed*
 3. Edit `bruteforce.py` script to fit your Shodan seach needs (`shef_command =....`)
-4. Run `bruteforce.py`
+4. Run `bruteforce.py`: `nohup python3 bruteforce.py > bruteforce.log 2>&1 &`
 
 Successful attempts will be output in `success.txt`
 
