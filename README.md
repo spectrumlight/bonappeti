@@ -5,15 +5,16 @@ It does multiple tasks at once using threads and adds delays for 5 seconds after
 Education purposes only.
 
 ## Usage
-1. Install Shef (https://github.com/1hehaq/shef)
+1. Install Shef: https://github.com/1hehaq/shef
 2. Use `filter.py` to filter the ports if needed*
-3. Edit `bruteforce.py` script to fit your Shodan seach needs (`shef_command =....`)
-4. Run `bruteforce.py`: `nohup python3 bruteforce.py > bruteforce.log 2>&1 &`
+3. Create `ports.txt` in the directory
+4. Edit `bruteforce.py` script to fit your Shodan seach needs (`shef_command =....`)
+5. Run `bruteforce.py`: `nohup python3 bruteforce.py > bruteforce.log 2>&1 &`
 
 Successful attempts will be output in `success.txt`
 
 ### `filter.py`
-Filters out number of ports when directly copied from Shodan.
+Filters out number of ports when directly copied from Shodan. 
 Example: 
 `9944
 1
