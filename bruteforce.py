@@ -51,7 +51,7 @@ def process_shef_with_delay(ports, delay_after, delay_seconds):
                 print(f"Warning: {file} not found in {httpbrute_dir}.")
 
         # Introduce a delay after every `delay_after` commands
-        if counter % delay_after == 0:
+        if counter % delay_after == 0 and counter != len(ports):
             print(f"Pausing for {delay_seconds} seconds to prevent server overload...")
             time.sleep(delay_seconds)
 
