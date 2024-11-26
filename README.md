@@ -12,7 +12,7 @@ It does multiple tasks at once using threads and adds delays for 5 seconds after
 Successful attempts will be output in `success.txt`
 
 ### `filter.py`
-Filters out number of ports when directly copied from Shodan
+Filters out number of ports when directly copied from Shodan.
 Example: 
 `9944
 1
