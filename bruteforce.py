@@ -7,8 +7,8 @@ import time
 # Configuration
 ports_file = "ports.txt"
 files_to_copy = ["passwd.txt", "script.sh", "users.txt"]
-httpbrute_dir = "/dev/.stuff/httpbrute"  # Directory containing files to copy
-ports_dir = "/dev/.stuff/ports"  # Base directory for port directories
+httpbrute_dir = "httpbrute"  # Directory containing files to copy
+ports_dir = "ports"  # Base directory for port directories
 delay_after = 3  # Number of commands to run before pausing
 delay_seconds = 5  # Number of seconds to wait during pause
 
