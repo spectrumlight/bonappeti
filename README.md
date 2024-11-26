@@ -6,7 +6,7 @@ Education purposes only.
 
 ## Usage
 1. Install Shef: https://github.com/1hehaq/shef
-2. Use `filter.py` to filter the ports if needed*
+2. Use `filter.py` to filter the ports if needed
 3. Create `ports.txt` in the directory
 4. Edit `bruteforce.py` script to fit your Shodan seach needs (`shef_command =....`)
 5. Run `bruteforce.py`: `nohup python3 bruteforce.py > bruteforce.log 2>&1 &`
