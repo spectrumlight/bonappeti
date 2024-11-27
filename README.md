@@ -1,7 +1,7 @@
 # Bonappeti
 ## HTTP 401 Unauthorized Mass Brute Force
 This Python script runs the shef command for many ports, creates a directory for each and tries different passwords to gain access. 
-It does multiple tasks at once using threads and adds delays for 5 seconds after executing `shef` 3 times to avoid anti-DOS blocks.
+It runs 40 brute force tasks at once using threads and adds delays for 5 seconds after executing `shef` 3 times to avoid anti-DOS blocks.
 Education purposes only.
 
 ## Usage
