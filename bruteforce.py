@@ -30,26 +30,31 @@ def process_shef_with_delay(ports, delay_after, delay_seconds):
     """
     for counter, port in enumerate(ports, start=1):
         port_dir = os.path.join(ports_dir, f"port_{port}")
-        os.makedirs(port_dir, exist_ok=True)
-
-        # Run the 'shef' command and save the output
         output_file = os.path.join(port_dir, f"{port}_401.txt")
-        shef_command = f"shef -q \"country:test '401' port:{port}\" > {output_file}"
-        print(f"Running shef for port {port}: {shef_command}")
-        try:
-            subprocess.run(shef_command, shell=True, check=True)
-        except subprocess.CalledProcessError as e:
-            print(f"Error running shef for port {port}: {e}")
-            continue
 
-        # Copy necessary files into the directory
-        for file in files_to_copy:
-            source_path = os.path.join(httpbrute_dir, file)
-            destination_path = os.path.join(port_dir, file)
-            if os.path.exists(source_path):
-                shutil.copy(source_path, destination_path)
-            else:
-                print(f"Warning: {file} not found in {httpbrute_dir}.")
+        # Skip shef command if the output file already exists
+        if os.path.exists(output_file):
+            print(f"Skipping shef for port {port} as the file {output_file} already exists.")
+        else:
+            os.makedirs(port_dir, exist_ok=True)
+
+            # Run the 'shef' command and save the output
+            shef_command = f"shef -q \"country:test '401' port:{port}\" > {output_file}"
+            print(f"Running shef for port {port}: {shef_command}")
+            try:
+                subprocess.run(shef_command, shell=True, check=True)
+            except subprocess.CalledProcessError as e:
+                print(f"Error running shef for port {port}: {e}")
+                continue
+
+            # Copy necessary files into the directory
+            for file in files_to_copy:
+                source_path = os.path.join(httpbrute_dir, file)
+                destination_path = os.path.join(port_dir, file)
+                if os.path.exists(source_path):
+                    shutil.copy(source_path, destination_path)
+                else:
+                    print(f"Warning: {file} not found in {httpbrute_dir}.")
 
         # Introduce a delay after every `delay_after` commands
         if counter % delay_after == 0 and counter != len(ports):
