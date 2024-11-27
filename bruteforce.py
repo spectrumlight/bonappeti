@@ -1,7 +1,7 @@
 import os
 import shutil
 import subprocess
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
 
 # Configuration
@@ -11,6 +11,7 @@ httpbrute_dir = "httpbrute"  # Directory containing files to copy
 ports_dir = "ports"  # Base directory for port directories
 delay_after = 3  # Number of commands to run before pausing
 delay_seconds = 5  # Number of seconds to wait during pause
+max_concurrent_ports = 40  # Number of concurrent brute force operations
 
 # Ensure the base directory for ports exists
 os.makedirs(ports_dir, exist_ok=True)
@@ -77,9 +78,13 @@ print("Starting shef processing for all ports...")
 process_shef_with_delay(ports, delay_after, delay_seconds)
 print("Shef processing completed for all ports.")
 
-# Step 2: Start brute-forcing for all ports concurrently
+# Step 2: Start brute-forcing for ports in batches of max_concurrent_ports
 print("Starting brute force attacks for all ports...")
-with ThreadPoolExecutor() as executor:  # No max_workers = unlimited
-    executor.map(brute_force, ports)
+for i in range(0, len(ports), max_concurrent_ports):
+    batch_ports = ports[i:i + max_concurrent_ports]
+    with ThreadPoolExecutor(max_workers=max_concurrent_ports) as executor:
+        futures = [executor.submit(brute_force, port) for port in batch_ports]
+        for future in as_completed(futures):
+            future.result()  # Ensure each task completes
 
 print("Brute force operations completed for all ports.")
