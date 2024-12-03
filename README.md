@@ -9,7 +9,7 @@ Education purposes only.
 1. Install Shef: https://github.com/1hehaq/shef
 2. Use `filter.py` to filter the ports if needed. It will create `ports.txt`
 3. Create `ports.txt` in the directory, if you did not use `filter.py`
-4. Edit `bruteforce.py` script to fit your Shodan seach needs (`shef_command =....`)
+4. Edit `bruteforce.py` script to fit your Shodan seach needs (`subprocess.run(["shef", "-q", f"country:...`)
 5. Run `bruteforce.py`: `nohup python3 bruteforce.py > bruteforce.log 2>&1 &`
 
 Successful attempts will be output in `success.txt`. To filter false positives use `cat success.txt | grep -v false`
