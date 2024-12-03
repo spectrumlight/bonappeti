@@ -1,5 +1,5 @@
 # Define the input and output file paths
-input_file = "portstofilter.txt"  # Change this to your file's name
+input_file = "unfiltered.txt"  # Change this to your file's name
 output_file = "filtered_ports.txt"  # Name for the output file
 
 # Open the input file and process the lines
