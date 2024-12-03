@@ -48,7 +48,7 @@ def process_shef_with_delay(ports: list[str], delay_after: int, delay_seconds: i
         # Run the 'shef' command and save the output
         try:
             with open(output_file, "w") as f:
-                subprocess.run(["shef", "-q", f"country:test '401' port:{port}"], stdout=f, check=True)
+                subprocess.run(["shef", "-q", f"country:ru '401' port:{port}"], stdout=f, check=True)
         except subprocess.CalledProcessError as e:
             logging.error(f"Error running shef for port {port}: {e}")
             continue
