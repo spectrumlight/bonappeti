@@ -12,7 +12,7 @@ Education purposes only.
 4. Edit `bruteforce.py` script to fit your Shodan seach needs (`shef_command =....`)
 5. Run `bruteforce.py`: `nohup python3 bruteforce.py > bruteforce.log 2>&1 &`
 
-Successful attempts will be output in `success.txt`
+Successful attempts will be output in `success.txt`. To filter false positives use `cat success.txt | grep -v false`
 
 ### `filter.py`
 Filters out number of ports when directly copied from Shodan. 
@@ -25,3 +25,5 @@ Example:
 1` to `9944
 9997
 10909`
+
+1. Run `python3 filter.py unfiltered.txt`
