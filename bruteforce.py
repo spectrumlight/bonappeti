@@ -11,7 +11,7 @@ httpbrute_dir = "httpbrute"  # Directory containing files to copy
 ports_dir = "ports"  # Base directory for port directories
 delay_after = 3  # Number of commands to run before pausing
 delay_seconds = 5  # Number of seconds to wait during pause
-max_concurrent_ports = 30  # Number of concurrent brute force operations
+max_concurrent_ports = 150  # Number of concurrent brute force operations
 
 # Ensure the base directory for ports exists
 os.makedirs(ports_dir, exist_ok=True)
