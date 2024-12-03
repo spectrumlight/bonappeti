@@ -6,12 +6,11 @@ output_file = "filtered_ports.txt"  # Name for the output file
 with open(input_file, "r") as infile:
     lines = infile.readlines()
 
-# Filter every other line, starting with the second
-filtered_lines = lines[1::2]  # Take every other line starting from index 1
+# Filter every other line, starting with the first
+filtered_lines = lines[::2]  # Take every other line starting from index 0
 
 # Write the filtered lines to the output file
 with open(output_file, "w") as outfile:
     outfile.writelines(filtered_lines)
 
 print(f"Filtered lines have been written to {output_file}")
-
