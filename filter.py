@@ -1,6 +1,6 @@
 # Define the input and output file paths
 input_file = "unfiltered.txt"  # Change this to your file's name
-output_file = "filtered_ports.txt"  # Name for the output file
+output_file = "ports.txt"  # Name for the output file
 
 # Open the input file and process the lines
 with open(input_file, "r") as infile:
