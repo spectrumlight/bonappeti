@@ -45,3 +45,8 @@ sysadmin
 service
 ftp
 backup
+0000
+1111
+2222
+3333
+4444
