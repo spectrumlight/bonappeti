@@ -27,3 +27,7 @@ Example:
 10909`
 
 1. Run `python3 filter.py unfiltered.txt`
+
+### `lookup.py`
+Performs tab name grabbing. Helps you to understands whats behind those 401s
+1. Run `python3 lookup.py`
