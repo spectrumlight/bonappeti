@@ -14,6 +14,7 @@ RESET = "\033[0m"
 print(f"""{BLUE}
 This might take a while...
 Pay attention to errors and retest the IPs manually if the script fails.
+Some websites may throw HTTP code 200 after multiple unsuccessful attempts thus be labeled as successful
 {RESET}""")
 
 def grab_tab_name(ip_port, username, password):
