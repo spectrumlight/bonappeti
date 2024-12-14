@@ -15,7 +15,7 @@ Education purposes only.
 Successful attempts will be output in `success.txt`. To filter false positives use `cat success.txt | grep -v false`
 
 ### `filter.py`
-Filters out number of hosts on ports when directly copied from Shodan. 
+Filters out the number of hosts on ports when directly copied from Shodan. 
 Example: 
 `9944
 1
