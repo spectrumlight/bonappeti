@@ -2,7 +2,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 
 # Define input and output files
-input_file = 'filtered_success.txt'
+input_file = 'success.txt'
 output_file = 'banners.txt'
 
 # ANSI color codes
