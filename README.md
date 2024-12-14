@@ -15,16 +15,16 @@ Education purposes only.
 Successful attempts will be output in `success.txt`. To filter false positives use `cat success.txt | grep -v false`
 
 ### `filter.py`
-Filters out the number of hosts on ports when directly copied from Shodan. 
+Filters out the number of hosts associated with ports when directly copied from Shodan. 
 Example: 
-`9944
-1
-9997
-1
-10909
-1` to `9944
-9997
-10909`
+`80
+10213
+443
+17381
+8080
+1986` to `80
+443
+8080`
 
 1. Run `python3 filter.py unfiltered.txt`
 
