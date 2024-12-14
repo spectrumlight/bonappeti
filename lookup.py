@@ -2,7 +2,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 
 # Define input and output files
-input_file = 'success.txt'
+input_file = 'filtered_success.txt'
 output_file = 'banners.txt'
 
 # ANSI color codes
@@ -14,7 +14,6 @@ RESET = "\033[0m"
 print(f"""{BLUE}
 This might take a while...
 Pay attention to errors and retest the IPs manually if the script fails.
-Some websites may throw HTTP code 200 after multiple unsuccessful attempts thus be labeled as successful
 {RESET}""")
 
 def grab_tab_name(ip_port, username, password):
@@ -44,7 +43,7 @@ def filter_input_file(input_file):
     filtered_lines = []
     with open(input_file, 'r') as infile:
         for line in infile:
-            if 'false' not in line and 'Error: 401 Client Error' not in line:
+            if 'false' not in line and 'Error: 401 Client Error' not in line and '154.205.128.114' not in line and '38.60.221.224' not in line:
                 filtered_lines.append(line.strip())
     return filtered_lines
 
