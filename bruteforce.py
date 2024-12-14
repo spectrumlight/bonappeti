@@ -46,7 +46,7 @@ def run_shef_for_port(port):
         print(f"Port {port}: Running `shef` to retrieve hosts.")
         with open(temp_output_file, "w") as temp_file:
             subprocess.run(
-                ["shef", "-q", f"country:ru '401' port:{port}"],
+                ["shef", "-q", f"country:<change> '401' port:{port}"],    ### Make you own prompt
                 stdout=temp_file, check=True
             )
 
